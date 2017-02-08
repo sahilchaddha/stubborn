@@ -3,7 +3,7 @@ platform :ios, '9.0'
 use_frameworks!
 
 target 'Tests' do
-    pod 'Stubborn', :path => '..'
     pod 'Alamofire'
+    pod 'Stubborn', :path => '..'
 end
 

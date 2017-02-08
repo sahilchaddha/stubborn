@@ -14,10 +14,24 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7AD7CE328F5A71D0C224747854880468"
+               BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
                BuildableName = "Stubborn.framework"
                BlueprintName = "Stubborn"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C134CB7D1C3CB65600215143"
+               BuildableName = "Tests.xctest"
+               BlueprintName = "Tests"
+               ReferencedContainer = "container:Tests.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -26,7 +40,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -42,7 +57,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7AD7CE328F5A71D0C224747854880468"
+            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
             BuildableName = "Stubborn.framework"
             BlueprintName = "Stubborn"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -64,7 +79,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7AD7CE328F5A71D0C224747854880468"
+            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
             BuildableName = "Stubborn.framework"
             BlueprintName = "Stubborn"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -79,6 +94,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
+            BuildableName = "Stubborn.framework"
+            BlueprintName = "Stubborn"
+            ReferencedContainer = "container:Pods/Pods.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
