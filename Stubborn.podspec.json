@@ -2,7 +2,7 @@
   "name": "Stubborn",
   "version": "0.1.0",
   "homepage": "https://github.com/materik/stubborn.git",
-  "summary": "",
+  "summary": "HTTP mock framework",
   "license": {
     "type": "MIT",
     "file": "LICENSE.md"

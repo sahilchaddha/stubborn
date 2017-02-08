@@ -1,0 +1,16 @@
+PODS:
+  - Stubborn (0.1.0)
+
+DEPENDENCIES:
+  - Stubborn (from `..`)
+
+EXTERNAL SOURCES:
+  Stubborn:
+    :path: ".."
+
+SPEC CHECKSUMS:
+  Stubborn: a2f7987863f35569ee0dfe10e6319bbbbddf6cfe
+
+PODFILE CHECKSUM: 1690719ee234d4670e13f457f1bc122e273fd6b3
+
+COCOAPODS: 1.1.1
