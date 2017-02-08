@@ -17,6 +17,7 @@
     "git": "https://github.com/materik/stubborn.git",
     "tag": "0.1.0"
   },
+  "source_files": "*.swift",
   "exclude_files": [
      "Tests"
   ]
