@@ -1,7 +1,9 @@
 PODS:
+  - Alamofire (4.3.0)
   - Stubborn (0.1.0)
 
 DEPENDENCIES:
+  - Alamofire
   - Stubborn (from `..`)
 
 EXTERNAL SOURCES:
@@ -9,8 +11,9 @@ EXTERNAL SOURCES:
     :path: ".."
 
 SPEC CHECKSUMS:
+  Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
   Stubborn: a2f7987863f35569ee0dfe10e6319bbbbddf6cfe
 
-PODFILE CHECKSUM: 1690719ee234d4670e13f457f1bc122e273fd6b3
+PODFILE CHECKSUM: d530d2c04b83f82227c809c36e3a294b3207407c
 
 COCOAPODS: 1.1.1

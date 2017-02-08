@@ -1,98 +1,85 @@
 
 import Foundation
 
+public typealias StubbornData = [AnyHashable: Any]
+public typealias StubbornResponse = (StubbornRequest) -> (StubbornData)
+
 public class Stubborn {
 
-    public typealias StubCallback = (Int) -> ([AnyHashable: Any])
-
-    class Stub {
-
-        private var numberOfRequests: Int = 0
-
-        var url: String
-        var callback: StubCallback
-
-        fileprivate var data: Data? {
-            self.numberOfRequests += 1
-            let dict = self.callback(self.numberOfRequests)
-            return try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
-        }
-
-        init(url: String, callback: @escaping StubCallback) {
-            self.url = url
-            self.callback = callback
-        }
-
-    }
-
-    class StubProtocol: URLProtocol {
-
-        override static func canInit(with request: URLRequest) -> Bool {
-            return true
-        }
-
-        override static func canonicalRequest(for request: URLRequest) -> URLRequest {
-            return request
-        }
-
-        override func startLoading() {
-            guard let url = self.request.url?.absoluteString else {
-                return
-            }
-            
-            for stub in Stubborn.shared.stubs {
-                let range = (url as NSString).range(of: url)
-                let regex = try? NSRegularExpression(pattern: stub.url, options: [])
-                let match = (regex?.matches(in: url, options: [], range: range).count ?? 0) > 0
-                if match, let data = stub.data {
-                    let response = HTTPURLResponse(
-                        url: self.request.url!,
-                        statusCode: 200,
-                        httpVersion: nil,
-                        headerFields: [
-                            "Content-Type": "application/json",
-                            "Content-Length": String(data.count),
-                            ]
-                    )!
-                    self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    self.client?.urlProtocol(self, didLoad: data)
-                    self.client?.urlProtocolDidFinishLoading(self)
-                    return
-                }
-            }
-
-            let response = HTTPURLResponse(
-                url: self.request.url!,
-                statusCode: 400,
-                httpVersion: nil,
-                headerFields: [:]
-            )!
-            self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            self.client?.urlProtocolDidFinishLoading(self)
-        }
-
-        override func stopLoading() {
-            // Do nothing...
-        }
-
-    }
-
-    private var stubs: [Stub] = []
+    var stubs: [StubbornStub] = []
 
     public static var shared: Stubborn = {
         return Stubborn()
     }()
 
     private init() {
-        URLProtocol.registerClass(StubProtocol.self)
+        let protocolClasses = [StubbornProtocol.self] as [AnyClass]
+        for protocolClass in protocolClasses {
+            URLProtocol.registerClass(protocolClass)
+        }
+        
+        URLSessionConfiguration.stubbornSwizzleDefaultSessionConfiguration()
     }
 
-    public func add(url: String, callback: @escaping StubCallback) {
-        self.stubs.append(Stub(url: url, callback: callback))
+    public func add(url: String, callback: @escaping StubbornResponse) {
+        self.stubs.append(
+            StubbornStub(
+                url: url,
+                callback: callback
+            )
+        )
     }
 
     public func reset() {
         self.stubs = []
     }
 
+}
+
+let swizzleDefaultSessionConfiguration: Void = {
+    
+    let defaultSessionConfiguration = class_getClassMethod(
+        URLSessionConfiguration.self,
+        #selector(getter: URLSessionConfiguration.default)
+    )
+    let stubbornDefaultSessionConfiguration = class_getClassMethod(
+        URLSessionConfiguration.self,
+        #selector(URLSessionConfiguration.stubbornDefaultSessionConfiguration)
+    )
+    method_exchangeImplementations(
+        defaultSessionConfiguration,
+        stubbornDefaultSessionConfiguration
+    )
+    
+    let ephemeralSessionConfiguration = class_getClassMethod(
+        URLSessionConfiguration.self,
+        #selector(getter: URLSessionConfiguration.ephemeral)
+    )
+    let stubbornEphemeralSessionConfiguration = class_getClassMethod(
+        URLSessionConfiguration.self,
+        #selector(URLSessionConfiguration.stubbornEphemeralSessionConfiguration)
+    )
+    method_exchangeImplementations(
+        ephemeralSessionConfiguration,
+        stubbornEphemeralSessionConfiguration
+    )
+}()
+
+extension URLSessionConfiguration {
+    /// Swizzles NSURLSessionConfiguration's default and ephermeral sessions to add Stubborn
+    public class func stubbornSwizzleDefaultSessionConfiguration() {
+        _ = swizzleDefaultSessionConfiguration
+    }
+    
+    class func stubbornDefaultSessionConfiguration() -> URLSessionConfiguration {
+        let configuration = stubbornDefaultSessionConfiguration()
+        configuration.protocolClasses = [StubbornProtocol.self] as [AnyClass] + configuration.protocolClasses!
+        return configuration
+    }
+    
+    class func stubbornEphemeralSessionConfiguration() -> URLSessionConfiguration {
+        let configuration = stubbornEphemeralSessionConfiguration()
+        configuration.protocolClasses = [StubbornProtocol.self] as [AnyClass] + configuration.protocolClasses!
+        return configuration
+    }
 }
