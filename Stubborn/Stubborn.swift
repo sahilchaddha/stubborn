@@ -18,7 +18,7 @@ public class Stubborn {
             URLProtocol.registerClass(protocolClass)
         }
         
-        URLSessionConfiguration.stubbornSwizzleDefaultSessionConfiguration()
+        URLSessionConfiguration.swizzle()
     }
 
     public func add(url: String, callback: @escaping StubbornResponse) {
@@ -34,52 +34,4 @@ public class Stubborn {
         self.stubs = []
     }
 
-}
-
-let swizzleDefaultSessionConfiguration: Void = {
-    
-    let defaultSessionConfiguration = class_getClassMethod(
-        URLSessionConfiguration.self,
-        #selector(getter: URLSessionConfiguration.default)
-    )
-    let stubbornDefaultSessionConfiguration = class_getClassMethod(
-        URLSessionConfiguration.self,
-        #selector(URLSessionConfiguration.stubbornDefaultSessionConfiguration)
-    )
-    method_exchangeImplementations(
-        defaultSessionConfiguration,
-        stubbornDefaultSessionConfiguration
-    )
-    
-    let ephemeralSessionConfiguration = class_getClassMethod(
-        URLSessionConfiguration.self,
-        #selector(getter: URLSessionConfiguration.ephemeral)
-    )
-    let stubbornEphemeralSessionConfiguration = class_getClassMethod(
-        URLSessionConfiguration.self,
-        #selector(URLSessionConfiguration.stubbornEphemeralSessionConfiguration)
-    )
-    method_exchangeImplementations(
-        ephemeralSessionConfiguration,
-        stubbornEphemeralSessionConfiguration
-    )
-}()
-
-extension URLSessionConfiguration {
-    /// Swizzles NSURLSessionConfiguration's default and ephermeral sessions to add Stubborn
-    public class func stubbornSwizzleDefaultSessionConfiguration() {
-        _ = swizzleDefaultSessionConfiguration
-    }
-    
-    class func stubbornDefaultSessionConfiguration() -> URLSessionConfiguration {
-        let configuration = stubbornDefaultSessionConfiguration()
-        configuration.protocolClasses = [StubbornProtocol.self] as [AnyClass] + configuration.protocolClasses!
-        return configuration
-    }
-    
-    class func stubbornEphemeralSessionConfiguration() -> URLSessionConfiguration {
-        let configuration = stubbornEphemeralSessionConfiguration()
-        configuration.protocolClasses = [StubbornProtocol.self] as [AnyClass] + configuration.protocolClasses!
-        return configuration
-    }
 }
