@@ -21,10 +21,11 @@ public class Stubborn {
         URLSessionConfiguration.swizzle()
     }
 
-    public func add(url: String, callback: @escaping StubbornResponse) {
+    public func add(url: String, delay: TimeInterval? = nil, callback: @escaping StubbornResponse) {
         self.stubs.append(
             StubbornStub(
                 url: url,
+                delay: delay,
                 callback: callback
             )
         )

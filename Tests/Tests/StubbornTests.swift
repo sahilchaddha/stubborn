@@ -42,4 +42,20 @@ class StubbornTests: XCTestCase {
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
     
+    func testDelay() {
+        Stubborn.shared.add(url: ".*/get", delay: 1.1) { _ in
+            return ["success": true]
+        }
+        
+        let startTime = Date().timeIntervalSince1970
+        let expectation = self.expectation(description: "request")
+        Alamofire.request("https://httpbin.org/get").responseJSON { _ in
+            XCTAssertGreaterThan(Date().timeIntervalSince1970 - startTime, 1)
+            XCTAssertLessThan(Date().timeIntervalSince1970 - startTime, 1.2)
+            expectation.fulfill()
+        }
+        
+        self.waitForExpectations(timeout: 2.0, handler: nil)
+    }
+    
 }

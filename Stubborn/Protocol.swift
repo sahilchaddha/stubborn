@@ -25,7 +25,20 @@ class StubbornProtocol: URLProtocol {
             
             self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             self.client?.urlProtocol(self, didLoad: data)
-            self.client?.urlProtocolDidFinishLoading(self)
+            
+            let fire: () -> () = { [weak self] in
+                guard let this = self else {
+                    return
+                }
+                this.client?.urlProtocolDidFinishLoading(this)
+            }
+            
+            if let delay = stub.delay {
+                let deadline = DispatchTime.now() + delay
+                DispatchQueue.main.asyncAfter(deadline: deadline, execute: fire)
+            } else {
+                fire()
+            }
             
             break
         }

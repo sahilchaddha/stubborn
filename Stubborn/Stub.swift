@@ -4,6 +4,7 @@ class StubbornStub {
     private var numberOfRequests: Int = 0
     
     var url: String
+    var delay: TimeInterval?
     var callback: StubbornResponse
     
     func data(for request: StubbornRequest) -> Data? {
@@ -16,8 +17,9 @@ class StubbornStub {
         return try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
     }
     
-    init(url: String, callback: @escaping StubbornResponse) {
+    init(url: String, delay: TimeInterval? = nil, callback: @escaping StubbornResponse) {
         self.url = url
+        self.delay = delay
         self.callback = callback
     }
     
