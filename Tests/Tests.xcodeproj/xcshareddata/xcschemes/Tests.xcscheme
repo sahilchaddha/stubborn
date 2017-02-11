@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0800"
+   LastUpgradeVersion = "0820"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
+               BlueprintIdentifier = "13E6346594DB2D9B1580BC346E131242"
                BuildableName = "Stubborn.framework"
                BlueprintName = "Stubborn"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -57,7 +57,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
+            BlueprintIdentifier = "13E6346594DB2D9B1580BC346E131242"
             BuildableName = "Stubborn.framework"
             BlueprintName = "Stubborn"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -79,7 +79,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
+            BlueprintIdentifier = "13E6346594DB2D9B1580BC346E131242"
             BuildableName = "Stubborn.framework"
             BlueprintName = "Stubborn"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -97,7 +97,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DC99A05A5E415CC4994F1696A5C3CDB7"
+            BlueprintIdentifier = "13E6346594DB2D9B1580BC346E131242"
             BuildableName = "Stubborn.framework"
             BlueprintName = "Stubborn"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">

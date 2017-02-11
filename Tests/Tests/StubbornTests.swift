@@ -9,15 +9,15 @@ class StubbornTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        Stubborn.shared.reset()
+        Stubborn.reset()
     }
     
     func testSuccess() {
-        Stubborn.shared.add(url: ".*/get") {
-            XCTAssertEqual($0.method, "GET")
-            XCTAssertNil($0.data)
-            XCTAssertEqual($0.url.absoluteString, "https://httpbin.org/get")
-            XCTAssertEqual($0.numberOfRequests, 1)
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            XCTAssertEqual(request.method, "GET")
+            XCTAssertNil(request.body)
+            XCTAssertEqual(request.url, "https://httpbin.org/get")
+            XCTAssertEqual(request.numberOfRequests, 1)
             
             return [
                 "success": true
@@ -26,6 +26,8 @@ class StubbornTests: XCTestCase {
         
         let expectation = self.expectation(description: "request")
         Alamofire.request("https://httpbin.org/get").responseJSON {
+            XCTAssertEqual($0.response?.statusCode, 200)
+            
             switch $0.result {
             case .success(let value):
                 guard let data = value as? [AnyHashable: Any] else {
@@ -39,11 +41,107 @@ class StubbornTests: XCTestCase {
             }
         }
         
-        self.waitForExpectations(timeout: 1.0, handler: nil)
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testFailure() {
+        Stubborn.add(url: ".*/get") { _ in
+            return Stubborn.Error(
+                statusCode: 400,
+                description: "Something went wrong"
+            )
+        }
+        
+        let expectation = self.expectation(description: "request")
+        Alamofire.request("https://httpbin.org/get").responseJSON {
+            XCTAssertEqual($0.response?.statusCode, 400)
+            
+            switch $0.result {
+            case .failure(let error):
+                XCTAssertEqual(error.localizedDescription, "Something went wrong")
+                expectation.fulfill()
+            default:
+                XCTAssertTrue(false)
+            }
+        }
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testNumberOfRequests() {
+        let expectation1 = self.expectation(description: "request1")
+        let expectation2 = self.expectation(description: "request2")
+        let expectation3 = self.expectation(description: "request3")
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            switch request.numberOfRequests {
+            case 1:
+                expectation1.fulfill()
+            case 2:
+                expectation2.fulfill()
+            case 3:
+                expectation3.fulfill()
+            default:
+                XCTAssertTrue(false)
+            }
+            
+            return ["success": true]
+        }
+        
+        _ = Alamofire.request("https://httpbin.org/get")
+        _ = Alamofire.request("https://httpbin.org/get")
+        _ = Alamofire.request("https://httpbin.org/get")
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testRequestBody() {
+        //    let expectation = self.expectation(description: "request")
+        //    Stubborn.add(url: ".*/post") { request -> (Stubborn.Body) in
+        //        XCTAssertEqual(request.body?["Page"] as? Int, 1)
+        //        expectation.fulfill()
+        //        
+        //        return ["success": true]
+        //    }
+        //    
+        //    _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: [
+        //        "Page": 1
+        //    ])
+        //    
+        //    self.waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testRequestHeader() {
+        let expectation = self.expectation(description: "request")
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            XCTAssertEqual(request.header?["X-Custom-Header"] as? String, "1")
+            expectation.fulfill()
+            
+            return ["success": true]
+        }
+        
+        _ = Alamofire.request("https://httpbin.org/get", headers: [
+            "X-Custom-Header": "1"
+        ])
+        
+        self.waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testQueryString() {
+        let expectation = self.expectation(description: "request")
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            XCTAssertEqual(request.queryString?.description, "query=stockholm")
+            expectation.fulfill()
+            
+            return ["success": true]
+        }
+        
+        _ = Alamofire.request("https://httpbin.org/get", parameters: ["query": "stockholm"])
+        
+        self.waitForExpectations(timeout: 2, handler: nil)
     }
     
     func testDelay() {
-        Stubborn.shared.add(url: ".*/get", delay: 1.1) { _ in
+        1 ⏱ Stubborn.add(url: ".*/get") { _ in
             return ["success": true]
         }
         
@@ -55,7 +153,31 @@ class StubbornTests: XCTestCase {
             expectation.fulfill()
         }
         
-        self.waitForExpectations(timeout: 2.0, handler: nil)
+        self.waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testResource() {
+        let bundle = Bundle(for: self.classForCoder)
+        Stubborn.add(url: ".*/get", resource: Stubborn.Resource("ResponseFile", in: bundle))
+        
+        let expectation = self.expectation(description: "request")
+        Alamofire.request("https://httpbin.org/get").responseJSON {
+            XCTAssertEqual($0.response?.statusCode, 200)
+            
+            switch $0.result {
+            case .success(let value):
+                guard let data = value as? [AnyHashable: Any] else {
+                    return
+                }
+                XCTAssertTrue(data.keys.contains("isFile"))
+                XCTAssertTrue(data["isFile"] as? Bool ?? false)
+                expectation.fulfill()
+            default:
+                XCTAssertTrue(false)
+            }
+        }
+        
+        self.waitForExpectations(timeout: 2, handler: nil)
     }
     
 }

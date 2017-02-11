@@ -1,8 +1,8 @@
 
 class StubbornProtocol: URLProtocol {
     
-    private var stubbornRequest: StubbornRequest? {
-        return StubbornRequest(request: self.request)
+    private var stubbornRequest: Stubborn.Request? {
+        return Stubborn.Request(request: self.request)
     }
     
     override static func canInit(with request: URLRequest) -> Bool {
@@ -18,13 +18,16 @@ class StubbornProtocol: URLProtocol {
             return
         }
         
-        for stub in Stubborn.shared.stubs {
-            guard let (response, data) = request.response(for: stub) else {
+        for stub in Stubborn.shared {
+            guard let (response, data, error) = request.response(for: stub) else {
                 continue
             }
             
             self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             self.client?.urlProtocol(self, didLoad: data)
+            if let error = error {
+                self.client?.urlProtocol(self, didFailWithError: error)
+            }
             
             let fire: () -> () = { [weak self] in
                 guard let this = self else {
@@ -34,8 +37,7 @@ class StubbornProtocol: URLProtocol {
             }
             
             if let delay = stub.delay {
-                let deadline = DispatchTime.now() + delay
-                DispatchQueue.main.asyncAfter(deadline: deadline, execute: fire)
+                delay.asyncAfter(fire)
             } else {
                 fire()
             }

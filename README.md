@@ -16,6 +16,8 @@ pod 'Stubborn'
 
 # Usage
 
+## Success
+
 ```swift
 Stubborn.shared.add(url: ".*/users") { request in
     print(request.url)
@@ -36,5 +38,34 @@ Stubborn.shared.add(url: ".*/users") { request in
         ]
     ]
 }
+```
+
+## Failure
+
+```swift
+Stubborn.shared.add(url: ".*/users") { request in
+    return (
+        statusCode: 400,
+        description: "Something went wrong"
+    )
+}
+```
+
+## Delayed
+
+Wait a second before responding
+
+```swift
+1 ⏱ Stubborn.shared.add(url: ".*/users") { request in
+    return [
+        "success": true
+    ]
+}
+```
+
+## From JSON file
+
+```swift
+Stubborn.shared.add(url: ".*/users", resource: "MyResponse")
 ```
 
