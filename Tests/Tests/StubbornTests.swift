@@ -73,7 +73,7 @@ class StubbornTests: XCTestCase {
         let expectation2 = self.expectation(description: "request2")
         let expectation3 = self.expectation(description: "request3")
         Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
-            switch request.numberOfRequests {
+            switch request.numberOfRequests! {
             case 1:
                 expectation1.fulfill()
             case 2:
@@ -95,6 +95,7 @@ class StubbornTests: XCTestCase {
     }
     
     func testRequestBody() {
+        // TODO: doesn't seem to be able to pass the body with the request??
         //    let expectation = self.expectation(description: "request")
         //    Stubborn.add(url: ".*/post") { request -> (Stubborn.Body) in
         //        XCTAssertEqual(request.body?["Page"] as? Int, 1)
@@ -178,6 +179,35 @@ class StubbornTests: XCTestCase {
         }
         
         self.waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testUnhandledRequest() {
+        let expectation1 = self.expectation(description: "request1")
+        Stubborn.unhandledRequest { request in
+            XCTAssertEqual(request.method, "GET")
+            XCTAssertNil(request.body)
+            XCTAssertEqual(request.url, "https://httpbin.org/get")
+            XCTAssertNil(request.numberOfRequests)
+            expectation1.fulfill()
+        }
+        
+        let expectation2 = self.expectation(description: "request2")
+        Alamofire.request("https://httpbin.org/get").responseJSON {
+            XCTAssertEqual($0.response?.statusCode, 200)
+            
+            switch $0.result {
+            case .success(let value):
+                guard let data = value as? [AnyHashable: Any] else {
+                    return
+                }
+                XCTAssertTrue(data.isEmpty)
+                expectation2.fulfill()
+            default:
+                XCTAssertTrue(false)
+            }
+        }
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
     }
     
 }

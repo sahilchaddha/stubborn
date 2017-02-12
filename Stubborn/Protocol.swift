@@ -19,35 +19,49 @@ class StubbornProtocol: URLProtocol {
         }
         
         for stub in Stubborn.shared {
-            guard let (response, data, error) = request.response(for: stub) else {
+            guard let response = request.response(for: stub) else {
                 continue
             }
             
-            self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            self.client?.urlProtocol(self, didLoad: data)
-            if let error = error {
-                self.client?.urlProtocol(self, didFailWithError: error)
-            }
+            self.respond(with: response, and: stub.delay)
             
-            let fire: () -> () = { [weak self] in
-                guard let this = self else {
-                    return
-                }
-                this.client?.urlProtocolDidFinishLoading(this)
-            }
-            
-            if let delay = stub.delay {
-                delay.asyncAfter(fire)
-            } else {
-                fire()
-            }
-            
-            break
+            return
         }
+        
+        Stubborn.shared.unhandledRequestResponse?(request)
+        
+        self.respond(with: request.response, and: nil)
     }
     
     override func stopLoading() {
         // Do nothing...
+    }
+    
+    private func respond(with response: Stubborn.Response, and delay: Stubborn.Delay?) {
+        let (response, data, error) = response
+        
+        self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        self.client?.urlProtocol(self, didLoad: data)
+        if let error = error {
+            self.client?.urlProtocol(self, didFailWithError: error)
+        }
+        
+        self.fire(with: delay)
+    }
+    
+    private func fire(with delay: Stubborn.Delay?) {
+        let fire: () -> () = { [weak self] in
+            guard let this = self else {
+                return
+            }
+            this.client?.urlProtocolDidFinishLoading(this)
+        }
+        
+        if let delay = delay {
+            delay.asyncAfter(fire)
+        } else {
+            fire()
+        }
     }
     
 }

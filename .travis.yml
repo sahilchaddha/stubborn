@@ -9,6 +9,7 @@ before_install:
   - gem install cocoapods -v 1.1.1
   - gem install specific_install
 install:
+  - pod repo update
   - cd ${TEST_SUITE} && pod install && cd ..
 env:
   global:

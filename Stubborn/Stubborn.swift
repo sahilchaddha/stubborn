@@ -5,8 +5,11 @@ public class Stubborn {
     
     public typealias SuccessResponse = (Request) -> (Body)
     public typealias FailureResponse = (Request) -> (Error)
+    public typealias UnhandledRequestResponse = (Request) -> ()
 
     fileprivate var stubs: [Stub] = []
+    
+    private(set) var unhandledRequestResponse: UnhandledRequestResponse?
 
     static var shared: Stubborn = {
         return Stubborn()
@@ -51,6 +54,10 @@ public class Stubborn {
         return stub
     }
     
+    fileprivate func unhandledRequest(_ response: @escaping UnhandledRequestResponse) {
+        self.unhandledRequestResponse = response
+    }
+    
     fileprivate func reset() {
         self.stubs = []
     }
@@ -72,6 +79,10 @@ extension Stubborn {
     @discardableResult
     public static func add(url: String, resource: Resource) -> Stub {
         return self.shared.add(url: url, resource: resource)
+    }
+    
+    public static func unhandledRequest(_ response: @escaping UnhandledRequestResponse) {
+        self.shared.unhandledRequest(response)
     }
     
     public static func reset() {

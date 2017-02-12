@@ -2,6 +2,8 @@
 import QueryString
 
 extension Stubborn {
+    
+    typealias Response = (HTTPURLResponse, Data, Swift.Error?)
 
     public struct Request {
         
@@ -13,7 +15,7 @@ extension Stubborn {
         public var body: Body?
         public var header: Body?
         public var queryString: QueryString?
-        public var numberOfRequests: Int = 0
+        public var numberOfRequests: Int?
         
         init?(request: URLRequest) {
             guard let url = request.url else {
@@ -31,7 +33,13 @@ extension Stubborn {
             return self.url =~ stub.url
         }
         
-        func response(for stub: Stubborn.Stub) -> (HTTPURLResponse, Data, Swift.Error?)? {
+        var response: Response {
+            let data = Body([:])!.data
+            let response = self.response(statusCode: 200, data: data)
+            return (response, data, nil)
+        }
+        
+        func response(for stub: Stubborn.Stub) -> Response? {
             guard self.match(stub: stub) else {
                 return nil
             }
