@@ -13,7 +13,7 @@ extension Stubborn {
         public var method: Method? // TODO: make enum
         public var url: URL
         public var body: Body?
-        public var header: Body?
+        public var headers: Body?
         public var queryString: QueryString?
         public var numberOfRequests: Int?
         
@@ -25,7 +25,7 @@ extension Stubborn {
             self.method = request.httpMethod
             self.url = url.absoluteString
             self.body = Body(request.httpBody)
-            self.header = Body(request.allHTTPHeaderFields)
+            self.headers = Body(request.allHTTPHeaderFields)
             self.queryString = QueryString(url: &self.url)
         }
         

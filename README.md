@@ -19,10 +19,12 @@ pod 'Stubborn'
 ## Success
 
 ```swift
-Stubborn.shared.add(url: ".*/users") { request in
-    print(request.url)
+Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
     print(request.method)
-    print(request.data)
+    print(request.url)
+    print(request.body)
+    print(request.headers)
+    print(request.queryString)
     print(request.numberOfRequests)
 
     return [
@@ -43,8 +45,8 @@ Stubborn.shared.add(url: ".*/users") { request in
 ## Failure
 
 ```swift
-Stubborn.shared.add(url: ".*/users") { request in
-    return (
+Stubborn.add(url: ".*/users") { request -> (Stubborn.Error) in
+    return Stubborn.Error(
         statusCode: 400,
         description: "Something went wrong"
     )
@@ -56,7 +58,7 @@ Stubborn.shared.add(url: ".*/users") { request in
 Wait a second before responding
 
 ```swift
-1 ⏱ Stubborn.shared.add(url: ".*/users") { request in
+1 ⏱ Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
     return [
         "success": true
     ]
@@ -66,6 +68,24 @@ Wait a second before responding
 ## From JSON file
 
 ```swift
-Stubborn.shared.add(url: ".*/users", resource: "MyResponse")
+Stubborn.add(url: ".*/users", resource: "MyResponse")
+```
+
+## Handle unhandled requests
+
+```swift
+Stubborn.unhandledRequest { request in
+    print(request.method)
+    print(request.url)
+    print(request.body)
+    print(request.headers)
+    print(request.queryString)
+}
+```
+
+## Reset
+
+```swift
+Stubborn.reset()
 ```
 

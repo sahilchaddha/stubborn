@@ -114,7 +114,7 @@ class StubbornTests: XCTestCase {
     func testRequestHeader() {
         let expectation = self.expectation(description: "request")
         Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
-            XCTAssertEqual(request.header?["X-Custom-Header"] as? String, "1")
+            XCTAssertEqual(request.headers?["X-Custom-Header"] as? String, "1")
             expectation.fulfill()
             
             return ["success": true]
