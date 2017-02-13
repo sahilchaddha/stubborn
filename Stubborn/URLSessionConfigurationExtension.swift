@@ -1,41 +1,59 @@
 
 extension URLSessionConfiguration {
     
-    class func swizzle() {
-        swizzleDefault()
-        swizzleEphemeral()
+    private static var isSwizzled: Bool = false
+    
+    private class func toggleSwizzleStubborn() {
+        let defaultSelector = #selector(getter: self.default)
+        let defaultStubbornSelector = #selector(self.stubborn_default)
+        let ephemeralSelector = #selector(getter: self.ephemeral)
+        let ephemeralStubbornSelector = #selector(self.stubborn_ephemeral)
+        
+        if self.isSwizzled {
+            self.isSwizzled = false
+            
+            URLSessionConfiguration.exchange(defaultStubbornSelector, with: defaultSelector)
+            URLSessionConfiguration.exchange(ephemeralStubbornSelector, with: ephemeralSelector)
+        } else {
+            self.isSwizzled = true
+            
+            URLSessionConfiguration.exchange(defaultSelector, with: defaultStubbornSelector)
+            URLSessionConfiguration.exchange(ephemeralSelector, with: ephemeralStubbornSelector)
+        }
     }
     
-    private func appendStubbornProtocol() -> URLSessionConfiguration {
-        let stubbornProtocolClasses = [StubbornProtocol.self] as [AnyClass]
-        self.protocolClasses = stubbornProtocolClasses + self.protocolClasses!
-        return self
+    class func registerStubborn() {
+        if !self.isSwizzled {
+            self.toggleSwizzleStubborn()
+        }
     }
     
-    @objc fileprivate class func stubborn_default() -> URLSessionConfiguration {
-        return stubborn_default().appendStubbornProtocol()
+    class func unregisterStubborn() {
+        if self.isSwizzled {
+            self.toggleSwizzleStubborn()
+        }
     }
     
-    @objc fileprivate class func stubborn_ephemeral() -> URLSessionConfiguration {
-        return stubborn_ephemeral().appendStubbornProtocol()
+    private func registerClass(_ protocolClass: Swift.AnyClass) {
+        self.protocolClasses = [protocolClass]
     }
     
-    fileprivate static func exchange(_ selector: Selector, with replacementSelector: Selector) {
+    @objc private class func stubborn_default() -> URLSessionConfiguration {
+        let configuration = self.stubborn_default()
+        configuration.registerClass(StubbornProtocol.self)
+        return configuration
+    }
+    
+    @objc private class func stubborn_ephemeral() -> URLSessionConfiguration {
+        let configuration = self.stubborn_ephemeral()
+        configuration.registerClass(StubbornProtocol.self)
+        return configuration
+    }
+    
+    private class func exchange(_ selector: Selector, with replacementSelector: Selector) {
         let method = class_getClassMethod(self, selector)
         let replacementMethod = class_getClassMethod(self, replacementSelector)
         method_exchangeImplementations(method, replacementMethod)
     }
 
-}
-
-private let swizzleDefault: () -> () = {
-    let selector = #selector(getter: URLSessionConfiguration.default)
-    let stubbornSelector = #selector(URLSessionConfiguration.stubborn_default)
-    URLSessionConfiguration.exchange(selector, with: stubbornSelector)
-}
-
-private let swizzleEphemeral: () -> () = {
-    let selector = #selector(getter: URLSessionConfiguration.ephemeral)
-    let stubbornSelector = #selector(URLSessionConfiguration.stubborn_ephemeral)
-    URLSessionConfiguration.exchange(selector, with: stubbornSelector)
 }

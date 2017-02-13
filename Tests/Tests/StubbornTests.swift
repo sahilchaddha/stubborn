@@ -12,6 +12,49 @@ class StubbornTests: XCTestCase {
         Stubborn.reset()
     }
     
+    func testStart() {
+        let expectation0 = self.expectation(description: "request0")
+        Stubborn.unhandledRequest { _ in
+            expectation0.fulfill()
+        }
+        
+        let expectation1 = self.expectation(description: "request1")
+        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
+            expectation1.fulfill()
+        }
+        
+        Stubborn.start()
+        
+        let expectation2 = self.expectation(description: "request2")
+        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
+            expectation2.fulfill()
+        }
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+
+    func testStop() {
+        let expectation0 = self.expectation(description: "request0")
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            expectation0.fulfill()
+            return [:]
+        }
+        
+        let expectation1 = self.expectation(description: "request1")
+        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
+            expectation1.fulfill()
+        }
+        
+        Stubborn.stop()
+        
+        let expectation2 = self.expectation(description: "request2")
+        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
+            expectation2.fulfill()
+        }
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
     func testSuccess() {
         Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
             XCTAssertEqual(request.method, "GET")

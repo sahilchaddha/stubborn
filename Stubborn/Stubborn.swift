@@ -6,9 +6,9 @@ public class Stubborn {
     public typealias SuccessResponse = (Request) -> (Body)
     public typealias FailureResponse = (Request) -> (Error)
     public typealias UnhandledRequestResponse = (Request) -> ()
-
-    fileprivate var stubs: [Stub] = []
     
+    fileprivate var isOn: Bool = false
+    fileprivate var stubs: [Stub] = []
     private(set) var unhandledRequestResponse: UnhandledRequestResponse?
 
     static var shared: Stubborn = {
@@ -16,38 +16,32 @@ public class Stubborn {
     }()
 
     private init() {
-        let protocolClasses = [StubbornProtocol.self] as [AnyClass]
-        for protocolClass in protocolClasses {
-            URLProtocol.registerClass(protocolClass)
-        }
-        
-        URLSessionConfiguration.swizzle()
+        // Do nothing...
     }
     
     @discardableResult
     fileprivate func add(url: String, response: @escaping SuccessResponse) -> Stub {
         let stub = Stub(url)
         stub.successResponse = response
-        
-        self.stubs.append(stub)
-        
-        return stub
+        return self.add(stub: stub)
     }
     
     @discardableResult
     fileprivate func add(url: String, response: @escaping FailureResponse) -> Stub {
         let stub = Stub(url)
         stub.failureResponse = response
-        
-        self.stubs.append(stub)
-        
-        return stub
+        return self.add(stub: stub)
     }
     
     @discardableResult
     fileprivate func add(url: String, resource: Resource) -> Stub {
         let stub = Stub(url)
         stub.resource = resource
+        return self.add(stub: stub)
+    }
+    
+    fileprivate func add(stub: Stub) -> Stub {
+        self.start()
         
         self.stubs.append(stub)
         
@@ -58,13 +52,38 @@ public class Stubborn {
         self.unhandledRequestResponse = response
     }
     
+    fileprivate func start() {
+        guard !self.isOn else {
+            return
+        }
+        
+        self.isOn = true
+        
+        StubbornProtocol.register()
+    }
+    
+    fileprivate func stop() {
+        guard self.isOn else {
+            return
+        }
+        
+        self.isOn = false
+        
+        StubbornProtocol.unregister()
+    }
+    
     fileprivate func reset() {
         self.stubs = []
+        self.stop()
     }
 
 }
 
 extension Stubborn {
+    
+    public static var isOn: Bool {
+        return self.shared.isOn
+    }
     
     @discardableResult
     public static func add(url: String, response: @escaping SuccessResponse) -> Stub {
@@ -83,6 +102,14 @@ extension Stubborn {
     
     public static func unhandledRequest(_ response: @escaping UnhandledRequestResponse) {
         self.shared.unhandledRequest(response)
+    }
+    
+    public static func start() {
+        self.shared.start()
+    }
+    
+    public static func stop() {
+        self.shared.stop()
     }
     
     public static func reset() {

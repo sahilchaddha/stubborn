@@ -1,12 +1,22 @@
 
 class StubbornProtocol: URLProtocol {
     
-    private var stubbornRequest: Stubborn.Request? {
+    static func register() {
+        URLProtocol.registerClass(self)
+        URLSessionConfiguration.registerStubborn()
+    }
+    
+    static func unregister() {
+        URLProtocol.unregisterClass(self)
+        URLSessionConfiguration.unregisterStubborn()
+    }
+    
+    private var stubbornRequest: Stubborn.Request {
         return Stubborn.Request(request: self.request)
     }
     
     override static func canInit(with request: URLRequest) -> Bool {
-        return true
+        return request.url != nil
     }
     
     override static func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -14,18 +24,13 @@ class StubbornProtocol: URLProtocol {
     }
     
     override func startLoading() {
-        guard let request = self.stubbornRequest else {
-            return
-        }
-        
+        let request = self.stubbornRequest
         for stub in Stubborn.shared {
             guard let response = request.response(for: stub) else {
                 continue
             }
             
-            self.respond(with: response, and: stub.delay)
-            
-            return
+            return self.respond(with: response, and: stub.delay)
         }
         
         Stubborn.shared.unhandledRequestResponse?(request)

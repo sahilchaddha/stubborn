@@ -17,13 +17,9 @@ extension Stubborn {
         public var queryString: QueryString?
         public var numberOfRequests: Int?
         
-        init?(request: URLRequest) {
-            guard let url = request.url else {
-                return nil
-            }
-            
+        init(request: URLRequest) {
             self.method = request.httpMethod
-            self.url = url.absoluteString
+            self.url = request.url!.absoluteString
             self.body = Body(request.httpBody)
             self.headers = Body(request.allHTTPHeaderFields)
             self.queryString = QueryString(url: &self.url)
