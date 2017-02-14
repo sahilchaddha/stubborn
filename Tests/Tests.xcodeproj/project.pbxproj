@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C119E7301E4B41F100381109 /* StubbornTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C119E72F1E4B41F100381109 /* StubbornTests.swift */; };
 		C1D5FAA41E53026A00F8B67A /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = C1D5FAA31E53026A00F8B67A /* Resources */; };
+		C1D5FAA81E53099B00F8B67A /* ResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5FAA71E53099B00F8B67A /* ResourceTests.swift */; };
 		E8B3801FEC3B119D0ED371C9 /* Pods_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6088093AF6AD51447A2A1091 /* Pods_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -20,6 +21,7 @@
 		C134CB7E1C3CB65600215143 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C134CB831C3CB65600215143 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C1D5FAA31E53026A00F8B67A /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		C1D5FAA71E53099B00F8B67A /* ResourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceTests.swift; sourceTree = "<group>"; };
 		E13FD9A38FA7666B9CC1FAC6 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -85,6 +87,7 @@
 				C1D5FAA31E53026A00F8B67A /* Resources */,
 				C119E72E1E4B41DD00381109 /* SupportingFiles */,
 				C119E72F1E4B41F100381109 /* StubbornTests.swift */,
+				C1D5FAA71E53099B00F8B67A /* ResourceTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C119E7301E4B41F100381109 /* StubbornTests.swift in Sources */,
+				C1D5FAA81E53099B00F8B67A /* ResourceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

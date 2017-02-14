@@ -5,9 +5,17 @@ extension Stubborn {
         
         private let ext: String = "json"
 
-        fileprivate var name: String
-        fileprivate var bundle: Bundle = Bundle.main
-        fileprivate var subpath: String?
+        private var name: String
+        private var bundle: Bundle = Bundle.main
+        private var subpath: String?
+        
+        private var path: String? {
+            return self.bundle.path(
+                forResource: self.name,
+                ofType: self.ext,
+                inDirectory: self.subpath
+            )
+        }
         
         public init(_ resource: String, in bundle: Bundle = Bundle.main) {
             var pathComponents = resource.components(separatedBy: "/")
@@ -18,17 +26,17 @@ extension Stubborn {
         }
         
         var data: Data {
-            guard let path = self.bundle.path(
-                forResource: self.name,
-                ofType: self.ext,
-                inDirectory: self.subpath
-            ) else {
+            guard let path = self.path else {
                 fatalError("Couldn't find \(self.name).\(self.ext)")
             }
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
                 fatalError("Couldn't load \(path)")
             }
             return data
+        }
+        
+        public var exists: Bool {
+            return self.path != nil
         }
         
     }
