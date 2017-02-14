@@ -5,8 +5,13 @@ extension Stubborn {
         
         public typealias StatusCode = Int
 
-        var statusCode: StatusCode
-        var description: String
+        public var statusCode: StatusCode
+        public var description: String
+        
+        public init(statusCode: StatusCode, description: String) {
+            self.statusCode = statusCode
+            self.description = description
+        }
         
         private var body: Body {
             return ["error": self.description]
