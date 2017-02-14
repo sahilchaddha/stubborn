@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C119E7301E4B41F100381109 /* StubbornTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C119E72F1E4B41F100381109 /* StubbornTests.swift */; };
-		C17ACAE71E4F2753001D68EC /* ResponseFile.json in Resources */ = {isa = PBXBuildFile; fileRef = C17ACAE61E4F2753001D68EC /* ResponseFile.json */; };
+		C1D5FAA41E53026A00F8B67A /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = C1D5FAA31E53026A00F8B67A /* Resources */; };
 		E8B3801FEC3B119D0ED371C9 /* Pods_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6088093AF6AD51447A2A1091 /* Pods_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -19,7 +19,7 @@
 		C119E72F1E4B41F100381109 /* StubbornTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubbornTests.swift; sourceTree = "<group>"; };
 		C134CB7E1C3CB65600215143 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C134CB831C3CB65600215143 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C17ACAE61E4F2753001D68EC /* ResponseFile.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ResponseFile.json; sourceTree = "<group>"; };
+		C1D5FAA31E53026A00F8B67A /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 		E13FD9A38FA7666B9CC1FAC6 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -57,18 +57,17 @@
 			isa = PBXGroup;
 			children = (
 				C134CB831C3CB65600215143 /* Info.plist */,
-				C17ACAE61E4F2753001D68EC /* ResponseFile.json */,
 			);
-			name = SupportingFiles;
+			path = SupportingFiles;
 			sourceTree = "<group>";
 		};
 		C134CB731C3CB63200215143 = {
 			isa = PBXGroup;
 			children = (
-				C134CB801C3CB65600215143 /* Tests */,
-				C134CB7F1C3CB65600215143 /* Products */,
 				117464F7D4E77A1BD7791459 /* Frameworks */,
 				6F57BD4AC375763817726A07 /* Pods */,
+				C134CB7F1C3CB65600215143 /* Products */,
+				C134CB801C3CB65600215143 /* Tests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -83,8 +82,9 @@
 		C134CB801C3CB65600215143 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C119E72F1E4B41F100381109 /* StubbornTests.swift */,
+				C1D5FAA31E53026A00F8B67A /* Resources */,
 				C119E72E1E4B41DD00381109 /* SupportingFiles */,
+				C119E72F1E4B41F100381109 /* StubbornTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -150,7 +150,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C17ACAE71E4F2753001D68EC /* ResponseFile.json in Resources */,
+				C1D5FAA41E53026A00F8B67A /* Resources in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,7 +306,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Tests/Info.plist;
+				INFOPLIST_FILE = Tests/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -352,7 +352,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Tests/Info.plist;
+				INFOPLIST_FILE = Tests/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;

@@ -223,6 +223,33 @@ class StubbornTests: XCTestCase {
         self.waitForExpectations(timeout: 2, handler: nil)
     }
     
+    func testResourceSubpathed() {
+        let bundle = Bundle(for: self.classForCoder)
+        Stubborn.add(
+            url: ".*/get",
+            resource: Stubborn.Resource("Resources/ResponseFile", in: bundle)
+        )
+        
+        let expectation = self.expectation(description: "request")
+        Alamofire.request("https://httpbin.org/get").responseJSON {
+            XCTAssertEqual($0.response?.statusCode, 200)
+            
+            switch $0.result {
+            case .success(let value):
+                guard let data = value as? [AnyHashable: Any] else {
+                    return
+                }
+                XCTAssertTrue(data.keys.contains("isFile"))
+                XCTAssertTrue(data["isFile"] as? Bool ?? false)
+                expectation.fulfill()
+            default:
+                XCTAssertTrue(false)
+            }
+        }
+        
+        self.waitForExpectations(timeout: 2, handler: nil)
+    }
+    
     func testUnhandledRequest() {
         let expectation1 = self.expectation(description: "request1")
         Stubborn.unhandledRequest { request in
