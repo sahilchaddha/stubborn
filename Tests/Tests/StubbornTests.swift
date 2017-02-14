@@ -1,8 +1,7 @@
 
 import Alamofire
+import Stubborn
 import XCTest
-
-@testable import Stubborn
 
 class StubbornTests: XCTestCase {
     
