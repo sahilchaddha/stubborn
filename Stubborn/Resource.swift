@@ -6,7 +6,7 @@ extension Stubborn {
         fileprivate var resource: String
         fileprivate var bundle: Bundle = Bundle.main
         
-        init(_ resource: String, in bundle: Bundle = Bundle.main) {
+        public init(_ resource: String, in bundle: Bundle = Bundle.main) {
             self.resource = resource
             self.bundle = bundle
         }
