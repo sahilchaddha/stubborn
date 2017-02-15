@@ -51,11 +51,3 @@ extension Stubborn.Delay: ExpressibleByIntegerLiteral {
 public func + (lhs: Stubborn.Delay, rhs: Stubborn.Delay) -> Stubborn.Delay {
     return Stubborn.Delay(lhs.delay + rhs.delay)
 }
-
-infix operator ⏱
-
-@discardableResult
-public func ⏱ (delay: Stubborn.Delay?, stub: Stubborn.Stub) -> Stubborn.Stub {
-    stub.delay = delay
-    return stub
-}

@@ -16,10 +16,18 @@ pod 'Stubborn'
 
 ## Usage
 
+### Start
+
+This is done automatically when you add a stub
+
+```swift
+Stubborn.start()
+```
+
 ### Success
 
 ```swift
-Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
+Stubborn.add(url: ".*/users") { request in
     print(request.method)
     print(request.url)
     print(request.body)
@@ -45,9 +53,7 @@ Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
 ### Failure
 
 ```swift
-Stubborn.add(url: ".*/users") { request -> (Stubborn.Error) in
-    return Stubborn.Error(400, "Something went wrong")
-}
+Stubborn.add(url: ".*/users", error: Stubborn.Error(400, "Something went wrong"))
 ```
 
 ### Delayed
@@ -55,11 +61,7 @@ Stubborn.add(url: ".*/users") { request -> (Stubborn.Error) in
 Wait a second before responding
 
 ```swift
-1 ⏱ Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
-    return [
-        "success": true
-    ]
-}
+1 ⏱ Stubborn.add(url: ".*/users", dictionary: ["success": true])
 ```
 
 ### From JSON file
@@ -80,14 +82,6 @@ Stubborn.unhandledRequest { request in
 }
 ```
 
-### Start
-
-This is done automatically when you add a stub
-
-```swift
-Stubborn.start()
-```
-
 ### Reset
 
 ```swift
@@ -97,7 +91,7 @@ Stubborn.reset()
 ## Example
 
 ```swift
-Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
+Stubborn.add(url: ".*/users") { request in
     return [
         "page": request.queryString["page"],
     ]

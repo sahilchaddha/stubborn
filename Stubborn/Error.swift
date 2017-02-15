@@ -1,27 +1,25 @@
 
-extension Stubborn {
+extension Stubborn.Body {
 
-    public struct Error {
+    public class Error: Stubborn.Body {
 
-        public var statusCode: Request.StatusCode
-        public var message: String
+        public private(set) var statusCode: Stubborn.Request.StatusCode
+        public private(set) var message: String
         
-        public init(_ statusCode: Request.StatusCode, _ message: String) {
+        public required init(_ statusCode: Stubborn.Request.StatusCode, _ message: String) {
             self.statusCode = statusCode
             self.message = message
+            
+            super.init(["error": self.message])
         }
         
-        private var body: Body {
-            return ["error": self.description]
-        }
-        
-        var data: Data {
-            return self.body.data
+        public required init(dictionaryLiteral elements: (Key, Value)...) {
+            fatalError("not supported")
         }
         
         var error: Swift.Error? {
             return NSError(domain: "Error", code: self.statusCode, userInfo: [
-                NSLocalizedDescriptionKey: self.description
+                NSLocalizedDescriptionKey: self.message
             ])
         }
         
@@ -29,7 +27,7 @@ extension Stubborn {
 
 }
 
-extension Stubborn.Error: CustomStringConvertible {
+extension Stubborn.Body.Error: CustomStringConvertible {
     
     public var description: String {
         var description = "Error({"
@@ -39,5 +37,5 @@ extension Stubborn.Error: CustomStringConvertible {
         
         return description
     }
-    
+
 }

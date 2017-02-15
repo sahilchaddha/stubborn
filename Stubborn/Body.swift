@@ -1,17 +1,44 @@
 
 extension Stubborn {
-    
-    public struct Body {
+
+    public class Body {
+        
+        public typealias Key = AnyHashable
+        public typealias Value = Any
         
         typealias InternalBody = [Key: Value]
         
-        fileprivate var body: InternalBody
+        internal private(set) var body: InternalBody
         
         var data: Data {
             guard let data = try? JSONSerialization.data(withJSONObject: self.body, options: []) else {
                 fatalError("Couldn't parse data")
             }
             return data
+        }
+        
+        public required init(dictionaryLiteral elements: (Key, Value)...) {
+            var body: InternalBody = [:]
+            for (key, value) in elements {
+                body[key] = value
+            }
+            self.body = body
+        }
+        
+        init() {
+            self.body = [:]
+        }
+        
+        init(_ body: InternalBody) {
+            self.body = body
+        }
+        
+        init(_ elements: [(Key, Value)]) {
+            var body: InternalBody = [:]
+            for (key, value) in elements {
+                body[key] = value
+            }
+            self.body = body
         }
         
         init?(_ body: InternalBody?) {
@@ -21,43 +48,11 @@ extension Stubborn {
             self.body = body
         }
         
-        init?(_ body: Any?) {
-            self.init(body as? InternalBody)
-        }
-        
-        init?(_ data: Data?) {
-            guard let data = data,
-                let body = try? JSONSerialization.jsonObject(with: data, options: []) else {
-                return nil
-            }
-            self.init(body)
-        }
-        
-    }
-
-}
-
-extension Stubborn.Body: CustomStringConvertible {
-    
-    public var description: String {
-        return "Body(\(self.body))"
     }
     
 }
 
-extension Stubborn.Body: ExpressibleByDictionaryLiteral {
-    
-    public typealias Key = AnyHashable
-    public typealias Value = Any
-    
-    public init(dictionaryLiteral elements: (Stubborn.Body.Key, Stubborn.Body.Value)...) {
-        self.body = [:]
-        for (key, value) in elements {
-            self.body[key] = value
-        }
-    }
-    
-}
+extension Stubborn.Body: ExpressibleByDictionaryLiteral {}
 
 extension Stubborn.Body: Collection {
     
@@ -79,7 +74,7 @@ extension Stubborn.Body: Collection {
         return self.body[index]
     }
     
-    public subscript(index: String) -> Any? {
+    public subscript(index: Key) -> Value? {
         return self.body[index]
     }
     

@@ -19,7 +19,7 @@ class StubbornTests: XCTestCase {
     
     func testReset() {
         let expectation0 = self.expectation(description: "request0")
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             expectation0.fulfill()
             return [:]
         }
@@ -40,15 +40,13 @@ class StubbornTests: XCTestCase {
     }
     
     func testSuccess() {
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             XCTAssertEqual(request.method, "GET")
             XCTAssertNil(request.body)
             XCTAssertEqual(request.url, "https://httpbin.org/get")
             XCTAssertEqual(request.numberOfRequests, 1)
             
-            return [
-                "success": true
-            ]
+            return ["success": true]
         }
         
         let expectation = self.expectation(description: "request")
@@ -73,7 +71,7 @@ class StubbornTests: XCTestCase {
     
     func testFailure() {
         Stubborn.add(url: ".*/get") { _ in
-            return Stubborn.Error(400, "Something went wrong")
+            return Stubborn.Body.Error(400, "Something went wrong")
         }
         
         let expectation = self.expectation(description: "request")
@@ -96,7 +94,7 @@ class StubbornTests: XCTestCase {
         let expectation1 = self.expectation(description: "request1")
         let expectation2 = self.expectation(description: "request2")
         let expectation3 = self.expectation(description: "request3")
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             switch request.numberOfRequests! {
             case 1:
                 expectation1.fulfill()
@@ -137,7 +135,7 @@ class StubbornTests: XCTestCase {
     
     func testRequestHeader() {
         let expectation = self.expectation(description: "request")
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             XCTAssertEqual(request.headers?["X-Custom-Header"] as? String, "1")
             expectation.fulfill()
             
@@ -153,8 +151,8 @@ class StubbornTests: XCTestCase {
     
     func testQueryString() {
         let expectation = self.expectation(description: "request")
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
-            XCTAssertEqual(request.queryString?.description, "query=stockholm")
+        Stubborn.add(url: ".*/get") { request in
+            XCTAssertEqual(request.queryString?.description, "QueryString(query=stockholm)")
             expectation.fulfill()
             
             return ["success": true]
@@ -183,7 +181,10 @@ class StubbornTests: XCTestCase {
     
     func testResource() {
         let bundle = Bundle(for: self.classForCoder)
-        Stubborn.add(url: ".*/get", resource: Stubborn.Resource("ResponseFile", in: bundle))
+        Stubborn.add(
+            url: ".*/get",
+            resource: Stubborn.Body.Resource("ResponseFile", in: bundle)
+        )
         
         let expectation = self.expectation(description: "request")
         Alamofire.request("https://httpbin.org/get").responseJSON {
@@ -209,7 +210,7 @@ class StubbornTests: XCTestCase {
         let bundle = Bundle(for: self.classForCoder)
         Stubborn.add(
             url: ".*/get",
-            resource: Stubborn.Resource("Resources/ResponseFile", in: bundle)
+            resource: Stubborn.Body.Resource("Resources/ResponseFile", in: bundle)
         )
         
         let expectation = self.expectation(description: "request")
@@ -262,18 +263,18 @@ class StubbornTests: XCTestCase {
     }
     
     func testUseLastestStub() {
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             XCTAssertTrue(false, "Expected to use the later stub")
             return [:]
         }
         
         let expectation = self.expectation(description: "request")
-        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+        Stubborn.add(url: ".*/get") { request in
             expectation.fulfill()
             return [:]
         }
         
-        Alamofire.request("https://httpbin.org/get")
+        _ = Alamofire.request("https://httpbin.org/get")
         
         self.waitForExpectations(timeout: 1, handler: nil)
     }

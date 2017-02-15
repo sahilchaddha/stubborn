@@ -7,29 +7,36 @@ extension Stubborn {
         
         var url: Request.URL
         var delay: Delay?
-        var successResponse: SuccessResponse?
-        var failureResponse: FailureResponse?
-        var resource: Resource?
+        var response: RequestResponse
         
-        public init(_ url: String) {
+        init(_ url: String, response: @escaping RequestResponse) {
             self.url = url
+            self.response = response
         }
         
-        func loadData(_ request: Request) -> (Data?, Error?) {
+        convenience init(_ url: String, dictionary: Body.Dictionary) {
+            self.init(url) { _ in dictionary }
+        }
+        
+        convenience init(_ url: String, error: Body.Error) {
+            self.init(url) { _ in error }
+        }
+        
+        convenience init(_ url: String, resource: Body.Resource) {
+            self.init(url) { _ in resource }
+        }
+        
+        func loadBody(_ request: Request) -> Body {
             self.numberOfRequests += 1
             
             var request = request
             request.numberOfRequests = self.numberOfRequests
             
-            if let response = self.successResponse {
-                return (response(request).data, nil)
-            } else if let response = self.failureResponse {
-                return (nil, response(request))
-            } else if let resource = self.resource {
-                return (resource.data, nil)
-            }
+            return self.response(request)
+        }
         
-            fatalError("No available data")
+        func isStubbing(request: Request) -> Bool {
+            return request.url =~ self.url
         }
         
     }
@@ -42,18 +49,17 @@ extension Stubborn.Stub: CustomStringConvertible {
         var description = "Stub({"
         description = "\(description)\n    Url: \(self.url)"
         description = "\(description)\n    Delay: \(self.delay)"
-        
-        if let _ = self.successResponse {
-            description = "\(description)\n    Type: Success"
-        } else if let _ = self.failureResponse {
-            description = "\(description)\n    Type: Error"
-        } else if let resource = self.resource {
-            description = "\(description)\n    Type: \(resource)"
-        }
-        
         description = "\(description)\n})"
         
         return description
     }
     
+}
+
+infix operator ⏱
+
+@discardableResult
+public func ⏱ (delay: Stubborn.Delay?, stub: Stubborn.Stub) -> Stubborn.Stub {
+    stub.delay = delay
+    return stub
 }
