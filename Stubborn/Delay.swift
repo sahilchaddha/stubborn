@@ -5,7 +5,7 @@ extension Stubborn {
         
         fileprivate var delay: TimeInterval
         
-        init(_ delay: TimeInterval) {
+        init(_ delay: TimeInterval = 0) {
             self.delay = delay
         }
         
@@ -16,6 +16,14 @@ extension Stubborn {
             )
         }
         
+    }
+    
+}
+
+extension Stubborn.Delay: CustomStringConvertible {
+    
+    public var description: String {
+        return "Delay(\(self.delay))"
     }
     
 }
@@ -47,7 +55,7 @@ public func + (lhs: Stubborn.Delay, rhs: Stubborn.Delay) -> Stubborn.Delay {
 infix operator ⏱
 
 @discardableResult
-public func ⏱ (delay: Stubborn.Delay, stub: Stubborn.Stub) -> Stubborn.Stub {
-    stub.delay = (stub.delay ?? 0) + delay
+public func ⏱ (delay: Stubborn.Delay?, stub: Stubborn.Stub) -> Stubborn.Stub {
+    stub.delay = delay
     return stub
 }

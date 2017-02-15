@@ -37,6 +37,14 @@ extension Stubborn {
 
 }
 
+extension Stubborn.Body: CustomStringConvertible {
+    
+    public var description: String {
+        return "Body(\(self.body))"
+    }
+    
+}
+
 extension Stubborn.Body: ExpressibleByDictionaryLiteral {
     
     public typealias Key = AnyHashable

@@ -9,6 +9,7 @@ extension Stubborn {
         
         public typealias Method = String
         public typealias URL = String
+        public typealias StatusCode = Int
         
         public var method: Method? // TODO: make enum
         public var url: URL
@@ -66,4 +67,23 @@ extension Stubborn {
         
     }
 
+}
+
+extension Stubborn.Request: CustomStringConvertible {
+    
+    public var description: String {
+        let nilString = "<nil>"
+        
+        var description = "Request({"
+        description = "\(description)\n    Method: \(self.method ?? nilString)"
+        description = "\(description)\n    Url: \(self.url)"
+        description = "\(description)\n    Body: \(self.body ?? Stubborn.Body())"
+        description = "\(description)\n    Headers: \(self.headers ?? Stubborn.Body())"
+        description = "\(description)\n    QueryString: QueryString(\(self.queryString ?? QueryString()))"
+        description = "\(description)\n    NumberOfRequests: \(self.numberOfRequests ?? 0)"
+        description = "\(description)\n})"
+        
+        return description
+    }
+    
 }

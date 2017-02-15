@@ -2,15 +2,13 @@
 extension Stubborn {
 
     public struct Error {
-        
-        public typealias StatusCode = Int
 
-        public var statusCode: StatusCode
-        public var description: String
+        public var statusCode: Request.StatusCode
+        public var message: String
         
-        public init(statusCode: StatusCode, description: String) {
+        public init(_ statusCode: Request.StatusCode, _ message: String) {
             self.statusCode = statusCode
-            self.description = description
+            self.message = message
         }
         
         private var body: Body {
@@ -29,4 +27,17 @@ extension Stubborn {
         
     }
 
+}
+
+extension Stubborn.Error: CustomStringConvertible {
+    
+    public var description: String {
+        var description = "Error({"
+        description = "\(description)\n    StatusCode: \(self.statusCode)"
+        description = "\(description)\n    Message: \(self.message)"
+        description = "\(description)\n})"
+        
+        return description
+    }
+    
 }

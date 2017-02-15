@@ -24,15 +24,22 @@ class StubbornProtocol: URLProtocol {
     }
     
     override func startLoading() {
+        Stubborn.shared.log("startLoading", level: .verbose)
+        
         let request = self.stubbornRequest
-        for stub in Stubborn.shared {
+        
+        let stubs = Stubborn.shared.reversed()
+        for stub in stubs {
             guard let response = request.response(for: stub) else {
                 continue
             }
             
+            Stubborn.shared.log("handle request: <\(request)> with stub <\(stub)>")
+            
             return self.respond(with: response, and: stub.delay)
         }
         
+        Stubborn.shared.log("unhandled request: <\(request)>")
         Stubborn.shared.unhandledRequestResponse?(request)
         
         self.respond(with: request.response, and: nil)

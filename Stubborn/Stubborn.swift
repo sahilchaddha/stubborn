@@ -3,10 +3,27 @@ import Foundation
 
 public class Stubborn {
     
+    public enum LogLevel: Int {
+        
+        case debug
+        case verbose
+        
+        var flag: String {
+            switch self {
+            case .debug:
+                return "DEBUG  "
+            case .verbose:
+                return "VERBOSE"
+            }
+        }
+        
+    }
+    
     public typealias SuccessResponse = (Request) -> (Body)
     public typealias FailureResponse = (Request) -> (Error)
     public typealias UnhandledRequestResponse = (Request) -> ()
     
+    fileprivate var logLevel: LogLevel?
     fileprivate var isOn: Bool = false
     fileprivate var stubs: [Stub] = []
     private(set) var unhandledRequestResponse: UnhandledRequestResponse?
@@ -44,6 +61,7 @@ public class Stubborn {
         self.start()
         
         self.stubs.append(stub)
+        self.log("add stub: <\(stub)> (\(self.stubs.count))")
         
         return stub
     }
@@ -59,27 +77,34 @@ public class Stubborn {
         
         self.isOn = true
         
+        self.log("start")
         StubbornProtocol.register()
     }
     
-    fileprivate func stop() {
-        guard self.isOn else {
-            return
-        }
+    fileprivate func reset() {
+        self.log("reset")
         
-        self.isOn = false
-        
-        StubbornProtocol.unregister()
+        self.stubs = []
     }
     
-    fileprivate func reset() {
-        self.stubs = []
-        self.stop()
+    func log(_ message: String, level: LogLevel = .debug) {
+        if level.rawValue <= (self.logLevel?.rawValue ?? -1) {
+            print("Stubborn: \(level.flag): \(message)")
+        }
     }
 
 }
 
 extension Stubborn {
+    
+    public static var logLevel: LogLevel? {
+        get {
+            return self.shared.logLevel
+        }
+        set {
+            self.shared.logLevel = newValue
+        }
+    }
     
     public static var isOn: Bool {
         return self.shared.isOn
@@ -106,10 +131,6 @@ extension Stubborn {
     
     public static func start() {
         self.shared.start()
-    }
-    
-    public static func stop() {
-        self.shared.stop()
     }
     
     public static func reset() {

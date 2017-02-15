@@ -8,31 +8,16 @@ class StubbornTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
+        Stubborn.logLevel = .verbose
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        
         Stubborn.reset()
     }
     
-    func testStart() {
-        let expectation0 = self.expectation(description: "request0")
-        Stubborn.unhandledRequest { _ in
-            expectation0.fulfill()
-        }
-        
-        let expectation1 = self.expectation(description: "request1")
-        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
-            expectation1.fulfill()
-        }
-        
-        Stubborn.start()
-        
-        let expectation2 = self.expectation(description: "request2")
-        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
-            expectation2.fulfill()
-        }
-        
-        self.waitForExpectations(timeout: 1, handler: nil)
-    }
-
-    func testStop() {
+    func testReset() {
         let expectation0 = self.expectation(description: "request0")
         Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
             expectation0.fulfill()
@@ -40,15 +25,15 @@ class StubbornTests: XCTestCase {
         }
         
         let expectation1 = self.expectation(description: "request1")
-        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
-            expectation1.fulfill()
-        }
-        
-        Stubborn.stop()
-        
         let expectation2 = self.expectation(description: "request2")
-        _ = SessionManager().request("https://httpbin.org/get").responseJSON { _ in
-            expectation2.fulfill()
+        _ = Alamofire.request("https://httpbin.org/get").responseJSON { _ in
+            expectation1.fulfill()
+            
+            Stubborn.reset()
+            
+            _ = Alamofire.request("https://httpbin.org/get").responseJSON { _ in
+                expectation2.fulfill()
+            }
         }
         
         self.waitForExpectations(timeout: 1, handler: nil)
@@ -88,10 +73,7 @@ class StubbornTests: XCTestCase {
     
     func testFailure() {
         Stubborn.add(url: ".*/get") { _ in
-            return Stubborn.Error(
-                statusCode: 400,
-                description: "Something went wrong"
-            )
+            return Stubborn.Error(400, "Something went wrong")
         }
         
         let expectation = self.expectation(description: "request")
@@ -275,6 +257,23 @@ class StubbornTests: XCTestCase {
                 XCTAssertTrue(false)
             }
         }
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testUseLastestStub() {
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            XCTAssertTrue(false, "Expected to use the later stub")
+            return [:]
+        }
+        
+        let expectation = self.expectation(description: "request")
+        Stubborn.add(url: ".*/get") { request -> (Stubborn.Body) in
+            expectation.fulfill()
+            return [:]
+        }
+        
+        Alamofire.request("https://httpbin.org/get")
         
         self.waitForExpectations(timeout: 1, handler: nil)
     }

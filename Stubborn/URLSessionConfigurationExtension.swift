@@ -12,10 +12,14 @@ extension URLSessionConfiguration {
         if self.isSwizzled {
             self.isSwizzled = false
             
+            Stubborn.shared.log("unswizzle", level: .verbose)
+            
             URLSessionConfiguration.exchange(defaultStubbornSelector, with: defaultSelector)
             URLSessionConfiguration.exchange(ephemeralStubbornSelector, with: ephemeralSelector)
         } else {
             self.isSwizzled = true
+            
+            Stubborn.shared.log("swizzle", level: .verbose)
             
             URLSessionConfiguration.exchange(defaultSelector, with: defaultStubbornSelector)
             URLSessionConfiguration.exchange(ephemeralSelector, with: ephemeralStubbornSelector)
@@ -36,15 +40,20 @@ extension URLSessionConfiguration {
     
     private func registerClass(_ protocolClass: Swift.AnyClass) {
         self.protocolClasses = [protocolClass]
+        Stubborn.shared.log("registered class: \(self.protocolClasses ?? [])", level: .verbose)
     }
     
     @objc private class func stubborn_default() -> URLSessionConfiguration {
+        Stubborn.shared.log("using stubborn URLSessionConfiguration.default", level: .verbose)
+        
         let configuration = self.stubborn_default()
         configuration.registerClass(StubbornProtocol.self)
         return configuration
     }
     
     @objc private class func stubborn_ephemeral() -> URLSessionConfiguration {
+        Stubborn.shared.log("using stubborn URLSessionConfiguration.ephemeral", level: .verbose)
+        
         let configuration = self.stubborn_ephemeral()
         configuration.registerClass(StubbornProtocol.self)
         return configuration

@@ -5,7 +5,7 @@ extension Stubborn {
         
         private var numberOfRequests: Int = 0
         
-        var url: String
+        var url: Request.URL
         var delay: Delay?
         var successResponse: SuccessResponse?
         var failureResponse: FailureResponse?
@@ -32,6 +32,28 @@ extension Stubborn {
             fatalError("No available data")
         }
         
+    }
+    
+}
+
+extension Stubborn.Stub: CustomStringConvertible {
+    
+    public var description: String {
+        var description = "Stub({"
+        description = "\(description)\n    Url: \(self.url)"
+        description = "\(description)\n    Delay: \(self.delay)"
+        
+        if let _ = self.successResponse {
+            description = "\(description)\n    Type: Success"
+        } else if let _ = self.failureResponse {
+            description = "\(description)\n    Type: Error"
+        } else if let resource = self.resource {
+            description = "\(description)\n    Type: \(resource)"
+        }
+        
+        description = "\(description)\n})"
+        
+        return description
     }
     
 }

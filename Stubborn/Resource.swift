@@ -3,11 +3,11 @@ extension Stubborn {
 
     public struct Resource {
         
-        private let ext: String = "json"
+        fileprivate let ext: String = "json"
 
-        private var name: String
-        private var bundle: Bundle = Bundle.main
-        private var subpath: String?
+        fileprivate var name: String
+        fileprivate var bundle: Bundle = Bundle.main
+        fileprivate var subpath: String?
         
         private var path: String? {
             return self.bundle.path(
@@ -41,6 +41,14 @@ extension Stubborn {
         
     }
 
+}
+
+extension Stubborn.Resource: CustomStringConvertible {
+    
+    public var description: String {
+        return "Resource(\(self.name).\(self.ext))"
+    }
+    
 }
 
 extension Stubborn.Resource: ExpressibleByStringLiteral {
