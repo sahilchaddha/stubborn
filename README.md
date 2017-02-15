@@ -8,15 +8,15 @@
 
 Simple HTTP mocking framework.
 
-# Install
+## Install
 
 ```bash
 pod 'Stubborn'
 ```
 
-# Usage
+## Usage
 
-## Success
+### Success
 
 ```swift
 Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
@@ -42,18 +42,15 @@ Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
 }
 ```
 
-## Failure
+### Failure
 
 ```swift
 Stubborn.add(url: ".*/users") { request -> (Stubborn.Error) in
-    return Stubborn.Error(
-        statusCode: 400,
-        description: "Something went wrong"
-    )
+    return Stubborn.Error(400, "Something went wrong")
 }
 ```
 
-## Delayed
+### Delayed
 
 Wait a second before responding
 
@@ -65,13 +62,13 @@ Wait a second before responding
 }
 ```
 
-## From JSON file
+### From JSON file
 
 ```swift
 Stubborn.add(url: ".*/users", resource: "MyResponse")
 ```
 
-## Handle unhandled requests
+### Handle unhandled requests
 
 ```swift
 Stubborn.unhandledRequest { request in
@@ -83,9 +80,51 @@ Stubborn.unhandledRequest { request in
 }
 ```
 
-## Reset
+### Start
+
+This is done automatically when you add a stub
+
+```swift
+Stubborn.start()
+```
+
+### Reset
 
 ```swift
 Stubborn.reset()
+```
+
+## Example
+
+```swift
+Stubborn.add(url: ".*/users") { request -> (Stubborn.Body) in
+    return [
+        "page": request.queryString["page"],
+    ]
+}
+
+Alamofire.request("http://test.com/users?page=1").responseJSON {
+    switch $0.result {
+        case .success(let value):
+            guard let data = value as? [AnyHashable: Any] else {
+                return
+            }
+            print(value["page"]) // 1
+        default:
+        break
+    }
+}
+
+Alamofire.request("http://test.com/users?page=2").responseJSON {
+    switch $0.result {
+        case .success(let value):
+            guard let data = value as? [AnyHashable: Any] else {
+                return
+            }
+            print(value["page"]) // 2
+        default:
+        break
+    }
+}
 ```
 

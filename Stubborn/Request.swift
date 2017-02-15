@@ -79,7 +79,7 @@ extension Stubborn.Request: CustomStringConvertible {
         description = "\(description)\n    Url: \(self.url)"
         description = "\(description)\n    Body: \(self.body ?? Stubborn.Body())"
         description = "\(description)\n    Headers: \(self.headers ?? Stubborn.Body())"
-        description = "\(description)\n    QueryString: QueryString(\(self.queryString ?? QueryString()))"
+        description = "\(description)\n    QueryString: \(self.queryString ?? QueryString())"
         description = "\(description)\n    NumberOfRequests: \(self.numberOfRequests ?? 0)"
         description = "\(description)\n})"
         
