@@ -79,3 +79,23 @@ extension Stubborn.Body: Collection {
     }
     
 }
+
+extension Stubborn.Body: Equatable {}
+
+public func == (lhs: Stubborn.Body, rhs: Stubborn.Body) -> Bool {
+    return lhs.body == rhs.body
+}
+
+func == (lhs: Stubborn.Body.InternalBody, rhs: Stubborn.Body.InternalBody) -> Bool {
+    guard lhs.count == rhs.count else {
+        return false
+    }
+    for (key, lhsVal) in lhs {
+        guard let rhsVal = rhs[key] as? NSObject,
+            let lhsVal = lhsVal as? NSObject,
+            lhsVal == rhsVal else {
+            return false
+        }
+    }
+    return true
+}

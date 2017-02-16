@@ -39,7 +39,7 @@ extension URLSessionConfiguration {
     }
     
     private func registerClass(_ protocolClass: Swift.AnyClass) {
-        self.protocolClasses = [protocolClass]
+        self.protocolClasses = [protocolClass] + self.protocolClasses!
         Stubborn.log("registered class: \(self.protocolClasses ?? [])", level: .verbose)
     }
     

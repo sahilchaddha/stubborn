@@ -1,6 +1,7 @@
 
 import Alamofire
 import Stubborn
+import QueryString
 import XCTest
 
 class StubbornTests: XCTestCase {
@@ -70,9 +71,7 @@ class StubbornTests: XCTestCase {
     }
     
     func testFailure() {
-        Stubborn.add(url: ".*/get") { _ in
-            return Stubborn.Body.Error(400, "Something went wrong")
-        }
+        Stubborn.add(url: ".*/get", error: Stubborn.Body.Error(400, "Something went wrong"))
         
         let expectation = self.expectation(description: "request")
         Alamofire.request("https://httpbin.org/get").responseJSON {
@@ -117,20 +116,22 @@ class StubbornTests: XCTestCase {
     }
     
     func testRequestBody() {
-        // TODO: doesn't seem to be able to pass the body with the request??
-        //    let expectation = self.expectation(description: "request")
-        //    Stubborn.add(url: ".*/post") { request -> (Stubborn.Body) in
-        //        XCTAssertEqual(request.body?["Page"] as? Int, 1)
-        //        expectation.fulfill()
-        //        
-        //        return ["success": true]
-        //    }
-        //    
-        //    _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: [
-        //        "Page": 1
-        //    ])
-        //    
-        //    self.waitForExpectations(timeout: 2, handler: nil)
+        let expectation = self.expectation(description: "request")
+        Stubborn.add(url: ".*/post") { request -> (Stubborn.Body) in
+            XCTAssertEqual(request.body?["Page"] as? Int, 1)
+            expectation.fulfill()
+            
+            return ["success": true]
+        }
+        
+        _ = Alamofire.request(
+            "https://httpbin.org/post",
+            method: .post,
+            parameters: ["Page": 1],
+            encoding: JSONEncoding.default
+        )
+        
+        self.waitForExpectations(timeout: 2, handler: nil)
     }
     
     func testRequestHeader() {
@@ -164,9 +165,7 @@ class StubbornTests: XCTestCase {
     }
     
     func testDelay() {
-        1 ⏱ Stubborn.add(url: ".*/get") { _ in
-            return ["success": true]
-        }
+        1 ⏱ Stubborn.add(url: ".*/get", dictionary: ["success": true])
         
         let startTime = Date().timeIntervalSince1970
         let expectation = self.expectation(description: "request")
@@ -275,6 +274,44 @@ class StubbornTests: XCTestCase {
         }
         
         _ = Alamofire.request("https://httpbin.org/get")
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testStubByQueryString() {
+        let expectation1 = self.expectation(description: "request1")
+        QueryString(key: "page", value: "1") ❓ Stubborn.add(url: ".*/get") { request in
+            expectation1.fulfill()
+            return [:]
+        }
+        
+        let expectation2 = self.expectation(description: "request2")
+        QueryString(key: "page", value: "2") ❓ Stubborn.add(url: ".*/get") { request in
+            expectation2.fulfill()
+            return [:]
+        }
+        
+        _ = Alamofire.request("https://httpbin.org/get?page=1")
+        _ = Alamofire.request("https://httpbin.org/get", parameters: ["page": 2])
+        
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testStubByData() {
+        let expectation1 = self.expectation(description: "request1")
+        ["package": "123"] ❓ Stubborn.add(url: ".*/post") { request in
+            expectation1.fulfill()
+            return [:]
+        }
+        
+        let expectation2 = self.expectation(description: "request2")
+        ["package": "abc"] ❓ Stubborn.add(url: ".*/post") { request in
+            expectation2.fulfill()
+            return [:]
+        }
+        
+        _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: ["package": "123"])
+        _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: ["package": "abc"])
         
         self.waitForExpectations(timeout: 1, handler: nil)
     }

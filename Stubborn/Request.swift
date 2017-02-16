@@ -9,6 +9,8 @@ extension Stubborn {
         public typealias URL = String
         public typealias StatusCode = Int
         
+        private var request: URLRequest
+        
         public var method: Method? // TODO: make enum
         public var url: URL
         public var queryString: QueryString?
@@ -16,12 +18,41 @@ extension Stubborn {
         public var headers: Body.Headers?
         public var numberOfRequests: Int?
         
+        var isLoadingStream: Bool = false
+        
         init(request: URLRequest) {
+            self.request = request
+            
             self.method = request.httpMethod
             self.url = request.url!.absoluteString
             self.queryString = QueryString(url: &self.url)
             self.body = Body.Dictionary(request.httpBody)
             self.headers = Body.Headers(request.allHTTPHeaderFields)
+            
+            self.loadStream(with: request)
+        }
+        
+        private mutating func loadStream(with request: URLRequest) {
+            guard let stream = request.httpBodyStream else {
+                return
+            }
+            
+            self.isLoadingStream = true
+            stream.open()
+            
+            var data = Data()
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            
+            while stream.hasBytesAvailable {
+                let count = stream.read(&buffer, maxLength: 4096)
+                guard count > 0 else {
+                    break
+                }
+                data.append(&buffer, count: count)
+            }
+            
+            self.body = Body.Dictionary(data)
+            self.isLoadingStream = false
         }
         
     }

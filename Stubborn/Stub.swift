@@ -1,12 +1,16 @@
 
+import QueryString
+
 extension Stubborn {
 
     public class Stub {
         
         private var numberOfRequests: Int = 0
         
-        var url: Request.URL
-        var delay: Delay?
+        public private(set) var url: Request.URL
+        public var queryString: QueryString?
+        public var body: Body.Dictionary?
+        public var delay: Delay?
         var response: RequestResponse
         
         init(_ url: String, response: @escaping RequestResponse) {
@@ -36,7 +40,16 @@ extension Stubborn {
         }
         
         func isStubbing(request: Request) -> Bool {
-            return request.url =~ self.url
+            guard request.url =~ self.url else {
+                return false
+            }
+            if let queryString = self.queryString, queryString != request.queryString {
+                return false
+            }
+            if let body = self.body, body != request.body {
+                return false
+            }
+            return true
         }
         
     }
@@ -48,6 +61,8 @@ extension Stubborn.Stub: CustomStringConvertible {
     public var description: String {
         var description = "Stub({"
         description = "\(description)\n    Url: \(self.url)"
+        description = "\(description)\n    QueryString: \(self.queryString ?? QueryString())"
+        description = "\(description)\n    Body: \(self.body ?? Stubborn.Body.Dictionary())"
         description = "\(description)\n    Delay: \(self.delay)"
         description = "\(description)\n})"
         
@@ -57,9 +72,22 @@ extension Stubborn.Stub: CustomStringConvertible {
 }
 
 infix operator ⏱
+infix operator ❓
 
 @discardableResult
 public func ⏱ (delay: Stubborn.Delay?, stub: Stubborn.Stub) -> Stubborn.Stub {
     stub.delay = delay
+    return stub
+}
+
+@discardableResult
+public func ❓ (queryString: QueryString?, stub: Stubborn.Stub) -> Stubborn.Stub {
+    stub.queryString = queryString
+    return stub
+}
+
+@discardableResult
+public func ❓ (body: Stubborn.Body.Dictionary?, stub: Stubborn.Stub) -> Stubborn.Stub {
+    stub.body = body
     return stub
 }

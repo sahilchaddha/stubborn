@@ -24,9 +24,17 @@ class StubbornProtocol: URLProtocol {
     }
     
     override func startLoading() {
-        Stubborn.log("startLoading", level: .verbose)
-        
         let request = self.stubbornRequest
+        
+        guard !request.isLoadingStream else {
+            Stubborn.log("startLoading: is still loading stream", level: .verbose)
+            Stubborn.Delay(0.1).asyncAfter { [weak self] in
+                self?.startLoading()
+            }
+            return
+        }
+        
+        Stubborn.log("startLoading", level: .verbose)
         
         let stubs = Stubborn.stubs.reversed()
         for stub in stubs {
