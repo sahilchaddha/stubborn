@@ -91,34 +91,15 @@ Stubborn.reset()
 ## Example
 
 ```swift
-Stubborn.add(url: ".*/users") { request in
-    return [
-        "page": request.queryString["page"],
-    ]
+QueryString(key: "page", value: "1") ❓ Stubborn.add(url: ".*/get", dictionary: ["result": 1])
+QueryString(key: "page", value: "2") ❓ Stubborn.add(url: ".*/get", dictionary: ["result": 2])
+
+Alamofire.request("https://httpbin.org/get?page=1").responseJSON {
+print($0.value) // ["result": 1]
 }
 
-Alamofire.request("http://test.com/users?page=1").responseJSON {
-    switch $0.result {
-        case .success(let value):
-            guard let data = value as? [AnyHashable: Any] else {
-                return
-            }
-            print(value["page"]) // 1
-        default:
-        break
-    }
-}
-
-Alamofire.request("http://test.com/users?page=2").responseJSON {
-    switch $0.result {
-        case .success(let value):
-            guard let data = value as? [AnyHashable: Any] else {
-                return
-            }
-            print(value["page"]) // 2
-        default:
-        break
-    }
+Alamofire.request("https://httpbin.org/get?page=2").responseJSON {
+print($0.value) // ["result": 2]    
 }
 ```
 
