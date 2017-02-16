@@ -46,7 +46,7 @@ extension Stubborn {
             if let queryString = self.queryString, queryString != request.queryString {
                 return false
             }
-            if let body = self.body, body != request.body {
+            if let body = self.body, !(request.body?.contains(body) ?? false) {
                 return false
             }
             return true
@@ -73,6 +73,7 @@ extension Stubborn.Stub: CustomStringConvertible {
 
 infix operator ⏱
 infix operator ❓
+infix operator ❗️
 
 @discardableResult
 public func ⏱ (delay: Stubborn.Delay?, stub: Stubborn.Stub) -> Stubborn.Stub {
@@ -87,7 +88,7 @@ public func ❓ (queryString: QueryString?, stub: Stubborn.Stub) -> Stubborn.Stu
 }
 
 @discardableResult
-public func ❓ (body: Stubborn.Body.Dictionary?, stub: Stubborn.Stub) -> Stubborn.Stub {
+public func ❗️ (body: Stubborn.Body.Dictionary?, stub: Stubborn.Stub) -> Stubborn.Stub {
     stub.body = body
     return stub
 }

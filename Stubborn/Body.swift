@@ -48,6 +48,15 @@ extension Stubborn {
             self.body = body
         }
         
+        func contains(_ body: Body) -> Bool {
+            for (key, that) in body.body {
+                guard let this = self.body[key], this == that else {
+                    return false
+                }
+            }
+            return true
+        }
+        
     }
     
 }
@@ -80,22 +89,6 @@ extension Stubborn.Body: Collection {
     
 }
 
-extension Stubborn.Body: Equatable {}
-
-public func == (lhs: Stubborn.Body, rhs: Stubborn.Body) -> Bool {
-    return lhs.body == rhs.body
-}
-
-func == (lhs: Stubborn.Body.InternalBody, rhs: Stubborn.Body.InternalBody) -> Bool {
-    guard lhs.count == rhs.count else {
-        return false
-    }
-    for (key, lhsVal) in lhs {
-        guard let rhsVal = rhs[key] as? NSObject,
-            let lhsVal = lhsVal as? NSObject,
-            lhsVal == rhsVal else {
-            return false
-        }
-    }
-    return true
+fileprivate func == (lhs: Any, rhs: Any) -> Bool {
+    return String(describing: lhs) == String(describing: rhs)
 }

@@ -299,19 +299,29 @@ class StubbornTests: XCTestCase {
     
     func testStubByData() {
         let expectation1 = self.expectation(description: "request1")
-        ["package": "123"] ❓ Stubborn.add(url: ".*/post") { request in
+        ["package": "123"] ❗️ Stubborn.add(url: ".*/post") { request in
             expectation1.fulfill()
             return [:]
         }
         
         let expectation2 = self.expectation(description: "request2")
-        ["package": "abc"] ❓ Stubborn.add(url: ".*/post") { request in
+        ["package": "abc"] ❗️ Stubborn.add(url: ".*/post") { request in
             expectation2.fulfill()
             return [:]
         }
         
-        _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: ["package": "123"])
-        _ = Alamofire.request("https://httpbin.org/post", method: .post, parameters: ["package": "abc"])
+        _ = Alamofire.request(
+            "https://httpbin.org/post",
+            method: .post,
+            parameters: ["package": "123"],
+            encoding: JSONEncoding.default
+        )
+        _ = Alamofire.request(
+            "https://httpbin.org/post",
+            method: .post,
+            parameters: ["package": "abc", "ignoredparam": 1],
+            encoding: JSONEncoding.default
+        )
         
         self.waitForExpectations(timeout: 1, handler: nil)
     }
