@@ -24,6 +24,8 @@ public class Stubborn {
     
     public static var logLevel: LogLevel?
     public static var isOn: Bool = false
+    public static var isAllowingUnhandledRequest: Bool = false
+    
     static private(set) var stubs: [Stub] = []
     static private(set) var unhandledRequestResponse: UnhandledRequestResponse?
 
@@ -54,6 +56,7 @@ public class Stubborn {
     private static func add(stub: Stub) -> Stub {
         self.start()
         
+        stub.index = self.stubs.count
         self.stubs.append(stub)
         self.log("add stub: <\(stub)>")
         
@@ -79,6 +82,7 @@ public class Stubborn {
         self.log("reset")
         
         self.stubs = []
+        self.unhandledRequestResponse = nil
     }
     
     static func log(_ message: String, level: LogLevel = .debug) {

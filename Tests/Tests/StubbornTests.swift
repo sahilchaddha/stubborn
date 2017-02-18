@@ -233,6 +233,8 @@ class StubbornTests: XCTestCase {
     }
     
     func testUnhandledRequest() {
+        Stubborn.start()
+        
         let expectation1 = self.expectation(description: "request1")
         Stubborn.unhandledRequest { request in
             XCTAssertEqual(request.method, "GET")
@@ -324,6 +326,24 @@ class StubbornTests: XCTestCase {
         )
         
         self.waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func testIsAllowingUnhandledRequest() {
+        Stubborn.isAllowingUnhandledRequest = true
+        Stubborn.start()
+        
+        Stubborn.unhandledRequest { _ in
+            XCTAssertTrue(false, "didn't expect to handled the unhandled request")
+        }
+        
+        let expectation = self.expectation(description: "request")
+        _ = Alamofire.request("https://httpbin.org/get").responseJSON { _ in
+            expectation.fulfill()
+        }
+        
+        self.waitForExpectations(timeout: 1) { _ in
+            Stubborn.isAllowingUnhandledRequest = false
+        }
     }
     
 }

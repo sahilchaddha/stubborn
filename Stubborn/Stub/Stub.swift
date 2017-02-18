@@ -7,6 +7,7 @@ extension Stubborn {
         
         private var numberOfRequests: Int = 0
         
+        var index: Int?
         public private(set) var url: Request.URL
         public var queryString: QueryString?
         public var body: Body.Dictionary?
@@ -60,6 +61,7 @@ extension Stubborn.Stub: CustomStringConvertible {
     
     public var description: String {
         var description = "Stub({"
+        description = "\(description)\n    Index: \(self.index ?? -1)"
         description = "\(description)\n    Url: \(self.url)"
         description = "\(description)\n    QueryString: \(self.queryString ?? QueryString())"
         description = "\(description)\n    Body: \(self.body ?? Stubborn.Body.Dictionary())"

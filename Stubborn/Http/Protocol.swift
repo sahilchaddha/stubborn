@@ -47,10 +47,16 @@ class StubbornProtocol: URLProtocol {
             return self.respond(response, delay: stub.delay)
         }
         
-        Stubborn.log("unhandled request: <\(request)>")
-        Stubborn.unhandledRequestResponse?(request)
-        
-        self.respond(Stubborn.Response(request: request), delay: nil)
+        if Stubborn.isAllowingUnhandledRequest {
+            Stubborn.log("is allowing unhandled request: <\(request)>")
+            
+            self.client?.urlProtocolDidFinishLoading(self)
+        } else {
+            Stubborn.log("unhandled request: <\(request)>")
+            Stubborn.unhandledRequestResponse?(request)
+            
+            self.respond(Stubborn.Response(request: request), delay: nil)
+        }
     }
     
     override func stopLoading() {
