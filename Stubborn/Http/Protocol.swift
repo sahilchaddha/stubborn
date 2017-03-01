@@ -70,6 +70,11 @@ class StubbornProtocol: URLProtocol {
             self.client?.urlProtocol(self, didFailWithError: error)
         }
         
+        if Stubborn.logLevel != nil {
+            let body = try? JSONSerialization.jsonObject(with: response.data, options: [])
+            Stubborn.log("respond with data: <\(body ?? [:])>")
+        }
+        
         self.fire(with: delay)
     }
     
