@@ -1,6 +1,6 @@
 {
   "name": "Stubborn",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "homepage": "https://github.com/materik/stubborn.git",
   "summary": "Simple HTTP mocking framework",
   "license": {
@@ -15,7 +15,7 @@
   },
   "source": {
     "git": "https://github.com/materik/stubborn.git",
-    "tag": "0.5.1"
+    "tag": "0.5.2"
   },
   "source_files": "Stubborn/**/*.swift",
   "exclude_files": [
